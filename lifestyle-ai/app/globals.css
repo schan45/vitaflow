@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 17px;
+}
+
+/* hide scrollbar for mobile vibe */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* theme classes applied to <html> via SettingsContext */
+html.dark {
+  --background: #0B1220;
+  --foreground: #F1F5F9;
+}
+
+html.light {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+button {
+  font-size: 16px;
+}
+
+h1, h2, h3 {
+  letter-spacing: -0.3px;
+}
+
+/* clickable cards should be easier to tap */
+a > div,
+button {
+  min-height: 70px;
+}
+/* Card utility for lighter, blurred cards */
+.card {
+  background: rgba(71, 85, 105, 0.6);
+  backdrop-filter: blur(12px);
+  border-radius: 24px;
+  padding: 20px;
+}
