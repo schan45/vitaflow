@@ -1,143 +1,165 @@
-# VitaFlow – Bridging the gap between health data and daily consistency
+# VitaFlow – Bridging the Gap Between Health Data and Daily Consistency
 
-VitaFlow egy prevention-first egészségügyi lifestyle platform, amely onboarding kérdőív + AI elemzés alapján személyre szabott challenge-eket ad, és végigköveti a felhasználó haladását. (mobilapp elrendezés, így webes felüleről mobilon is megnyitható)
+VitaFlow is a prevention-first health lifestyle platform that uses structured onboarding questionnaires and AI analysis to generate personalized challenges and track user progress over time.
 
-## Fő funkciók röviden
+The application is built with a mobile-first layout, fully accessible on web and optimized for mobile usage.
 
-- Regisztráció és bejelentkezés Supabase Auth alapon
-- Többlépcsős onboarding kérdőív (orvosi háttér, baseline, lifestyle, motiváció, praktikus adatok)
-- AI chatbot tünetösszegzéssel és rizikóbecsléssel
-- Orvos ajánlás specialty-alapon (ha releváns) (egy előre megírt adatbázis alapján, ez később módosulna arra a featurre, hogy bizonyos magánkinikák példa kedvéért itt a MediCover, szerződésbe lépnek a VitaFlow fejlesztőivel, támogatják az alkalmazást, orvosi szakembereik ajánlása ellenében, ami az AI featur-rel kerül megvalósításra. Bizonyos egészségügyi problémák esetén személyre szabott ajánlást kaphatnak a leendő páciensek, milyen szakembert kell meglátogatniuk, és a jövőben ez egy GPS tracker beépítésével tenné gördülékenyebbé az ajánlást. )
-- Automatikus, személyre szabott challenge-generálás onboarding után
-- Tracker dashboard progresszív overload fókuszú heti tervvel
-- Profil és chat/onboarding/goals per-user perzisztencia
-- A jövőbeli fejlesztések bevzetésével már megkapott lelet értelmezés (vérvételi eredmények, MRI stb.., felhasználóbarát, könnyen érthető magyarázat. Orvos szakember és páciens közötti kommunikációs/megértésbeli gap kitöltése)
+## Core Features Overview
 
----
+- Registration and login powered by Supabase Auth
+- Multi-step onboarding questionnaire:
+	- Medical background
+	- Baseline
+	- Lifestyle
+	- Motivation
+	- Practical data
+- AI chatbot with symptom summarization and risk assessment
+- Specialty-based doctor recommendation (when relevant) from a predefined database
+- Automatic personalized challenge generation after onboarding
+- Tracker dashboard with progressive overload-focused weekly planning
+- Per-user persistence for profile, chat, onboarding, and goals
 
-## 1) AI Chatbot – részletes képességek
+### Future Direction
 
-### Mit csinál?
+Selected private clinics (for example, MediCover) may enter partnership agreements with VitaFlow. Through these collaborations, specialists could be recommended by the AI layer.
 
-- A felhasználó szöveges vagy hangalapú inputját feldolgozza
-- Rövid, támogató összegzést ad az állapotról
-- Kockázati szintet becsül (`low` / `moderate` / `high`)
-- Magasabb kockázatnál javasolt szakorvost keres specialty alapon
-- Fallback logikával akkor is működik, ha AI szolgáltatás átmenetileg nem elérhető
-
-### Kiemelt viselkedések
-
-- Többnyelvű tünet kulcsszavas fallback (HU/EN)
-- Kontextusos válaszok (nem statikus sablon)
-- Hangbevitel támogatás EN/HU váltóval
-- Chat history automatikus mentés és visszatöltés felhasználónként
-
-### Miért hasznos a demo-ban?
-
-- Látható AI érték (nem csak UI): döntés-előkészítés + ajánlás
-- Valós felhasználói élmény: beszélgetés, rizikó, ajánlás, következő lépés
+In relevant health scenarios, users would receive personalized guidance on which specialist to consult. In later phases, GPS integration could enable location-based specialist recommendations.
 
 ---
 
-## 2) Tracker – részletes képességek
+## 1) AI Chatbot – Detailed Capabilities
 
-### Mit követ?
+### What It Does
 
-- Goal completion állapotot
-- Progress százalékot (kördiagram + line/bar chart)
-- Streaket
-- Goal eloszlást (completed vs remaining)
+- Processes user input (text or voice)
+- Provides a short, supportive summary of the user's condition
+- Estimates risk level (`low`, `moderate`, `high`)
+- Recommends relevant medical specialists when risk is elevated
+- Includes fallback logic when AI services are temporarily unavailable
 
-### Zero-state és személyre szabás
+### Key Behaviors
 
-- Új felhasználó 0-ról indul (`0 goal`, `0%`, `0 streak`)
-- Onboarding utáni AI challenge-ek automatikusan feltöltik a goal listát
-- Minden adat per-user mentődik (`goals-data` API)
+- Multilingual symptom keyword fallback (HU / EN)
+- Context-aware responses (not static templates)
+- Voice input support with HU / EN toggle
+- Automatic chat history saving and per-user reload
 
-### Progressive plan (challenge fókusz)
+### Why It Is Valuable in a Demo
 
-- `Week 1/2/3/...` jelölésű feladatok külön blokkban jelennek meg
-- „Current focus: Week X” kiemelés a következő aktív hétre
-- Progressive overload logika (fokozatos nehezítés)
-
----
-
-## 3) Profil rész – részletes képességek
-
-### Mit mutat?
-
-- Felhasználó profil azonosító adatai
-- Onboarding kérdőívből származó baseline/medical/lifestyle/motiváció/praktikus adatok
-- Aktív goal lista állapottal
-
-### Adatforrás
-
-- Profil init API (`/api/profile/init`) kezeli a profil rekord inicializálást
-- Profil adatok Supabase-ben tárolódnak
-- Legacy fallback tárolás is támogatott kompatibilitás miatt
-
-### Felhasználói élmény
-
-- Frissítés/relogin után is ugyanazok az adatok töltődnek vissza
-- Nem lokális demo state, hanem accounthoz kötött állapot
+- Demonstrates real AI-driven value beyond UI
+- Shows end-to-end flow:
+	- Conversation
+	- Risk estimation
+	- Recommendation
+	- Next action
 
 ---
 
-## 4) Onboarding alapú challenge generálás
+## 2) Tracker – Detailed Capabilities
 
-### Folyamat
+### What It Tracks
 
-1. Felhasználó kitölti az 5 lépéses kérdőívet
-2. „Complete” után a kliens meghívja a challenge-generáló API-t
-3. API AI-val (Azure OpenAI) challenge listát készít
-4. Ha AI hiba van, szabályalapú fallback challenge lista készül
-5. Challenge-ek automatikusan bekerülnek a goal rendszerbe
+- Goal completion status
+- Progress percentage (pie, line, and bar chart)
+- Streak count
+- Goal distribution (`completed` vs `remaining`)
 
-### Kimenet jellemzői
+### Zero-State and Personalization
 
-- 4-6 konkrét challenge
-- `Daily`/`Weekly` frekvencia
-- Progressive week-labeled feladatok (pl. Week 1 → Week 2 → Week 3)
+- New users start from zero (`0 goals`, `0% progress`, `0 streak`)
+- AI-generated challenges after onboarding auto-populate the goal list
+- All tracking data is stored per user via the `goals-data` API
+
+### Progressive Plan (Challenge Focus)
+
+- Week-labeled tasks (`Week 1`, `Week 2`, `Week 3`, etc.) in a dedicated section
+- `Current focus: Week X` highlighting for active week
+- Progressive overload logic (gradually increasing difficulty)
 
 ---
 
-## 5) Leletelemző (Medical Report Analyzer) – implementációs terv 
+## 3) Profile Section – Detailed Capabilities
 
-Jelenlegi állapot:
+### What It Displays
 
-- A feltöltési UI már létezik (drag & drop / file picker)
-- A rendszer már jelzi, hogy van feltöltött lelet (`hasUploadedReport` user-scoped flag)
-- Van AI service függvény szöveges lelet összegzésre
+- User identification data
+- Onboarding-derived data:
+	- Medical background
+	- Baseline
+	- Lifestyle
+	- Motivation
+	- Practical information
+- Active goal list with status
 
-Teljes, production-közeli implementáció javasolt lépései (Jövőbeli fejlesztések):
+### Data Source
 
-### A) Fájlfeltöltés backendre
+- Profile initialization via `/api/profile/init`
+- Profile data stored in Supabase
+- Legacy fallback storage kept for compatibility
 
-### B) Szövegkinyerés (OCR / parsing)
+### User Experience
 
-### C) AI összegzés és strukturálás
+- Data persists after refresh and re-login
+- Fully account-bound persistence (not local demo state)
 
-- Meghívás az AI summary service-re
-- Strukturált JSON kimenet:
-	- kulcsleletek
-	- eltérések
-	- figyelmeztetések
-	- javasolt kontrollpontok
-- Fontos: „nem diagnózis” disclaimer
+---
 
-### D) Chat + Tracker integráció
+## 4) Onboarding-Based Challenge Generation
 
-- Chat használja a legfrissebb lelet összegzést kontextusként
-- Tracker challenge-ek módosítása lelet alapján (pl. intenzitás korrekció)
-- Orvosajánló specialty prioritás a lelet alapján
+### Process
 
-### E) Biztonság és compliance minimum
+1. User completes the 5-step onboarding questionnaire.
+2. On `Complete`, client calls the challenge generation API.
+3. API uses Azure OpenAI to generate personalized challenges.
+4. If AI fails, rule-based fallback challenges are generated.
+5. Challenges are automatically inserted into the goal system.
 
-- Csak autentikált user férjen hozzá saját reporthoz
-- Service role kulcs kizárólag szerver oldalon
-- PII/PHI minimalizálás logokban
-- Törlés/retention policy definiálása
+### Output Characteristics
 
+- 4–6 specific challenges
+- `Daily` or `Weekly` frequency
+- Progressive week-labeled structure (for example: `Week 1 → Week 2 → Week 3`)
 
+---
 
+## 5) Medical Report Analyzer – Implementation Plan
 
+### Current Status
+
+- Upload UI already implemented (`drag & drop` / file picker)
+- System detects uploaded reports (`hasUploadedReport` user-scoped flag)
+- AI service function exists for textual report summarization
+
+### Recommended Production-Level Implementation (Future Development)
+
+#### A) Backend File Upload
+
+- Secure server-side storage
+- Authenticated user access only
+
+#### B) Text Extraction (OCR / Parsing)
+
+- Extract readable content from PDF or image-based reports
+
+#### C) AI Summarization and Structuring
+
+- Call AI summary service
+- Return structured JSON output including:
+	- Key findings
+	- Abnormal values
+	- Warnings
+	- Suggested monitoring points
+- Mandatory `not a diagnosis` disclaimer
+
+#### D) Chat and Tracker Integration
+
+- Chat uses latest report summary as context
+- Tracker challenges adjusted based on findings (for example intensity correction)
+- Doctor recommendation specialty prioritization from report results
+
+#### E) Security and Minimum Compliance
+
+- Only authenticated users can access their own reports
+- Service role key remains strictly server-side
+- PII/PHI minimized in logs
+- Defined data retention and deletion policy
