@@ -8,24 +8,36 @@ export default function Auth() {
   const router = useRouter();
   const { login, register } = useAuth();
   const [isRegister, setIsRegister] = useState(false);
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [authError, setAuthError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    if (!username || !password) return;
-    if (isRegister && !email) return;
+  const handleSubmit = async () => {
+    setAuthError("");
 
-    if (isRegister) {
-      localStorage.setItem("username", username);
+    if (!email || !password) return;
+
+    setIsSubmitting(true);
+
+    try {
+      if (isRegister) {
+        await register({ email, password });
+      } else {
+        await login({ email, password });
+      }
+
       localStorage.setItem("email", email);
-      localStorage.setItem("password", password);
-      register();
-      router.push("/onboarding");
-    } else {
-      localStorage.setItem("username", username);
-      login();
-      router.push("/");
+
+      if (isRegister) {
+        router.push("/onboarding");
+      } else {
+        router.push("/");
+      }
+    } catch (error: unknown) {
+      setAuthError(error instanceof Error ? error.message : "Authentication failed.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -37,43 +49,41 @@ export default function Auth() {
         <div className="absolute -top-10 -left-10 w-32 h-32 bg-blue-500/30 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-purple-500/30 rounded-full blur-3xl"></div>
 
-        <div className="bg-white/10 backdrop-blur-xl border border-white/10 p-10 rounded-[40px] shadow-2xl space-y-6">
+        <div className="app-card rounded-4xl p-8 space-y-5">
 
           <h1 className="text-2xl font-semibold text-center">
             {isRegister ? "🌱 Create Profile" : "👋 Welcome Back"}
           </h1>
 
           <input
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full p-4 rounded-2xl bg-white/10 border border-white/10 outline-none"
+            placeholder="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="app-input"
           />
-
-          {isRegister && (
-            <input
-              placeholder="Email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-4 rounded-2xl bg-white/10 border border-white/10 outline-none"
-            />
-          )}
 
           <input
             placeholder="Password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-4 rounded-2xl bg-white/10 border border-white/10 outline-none"
+            className="app-input"
           />
 
           <button
             onClick={handleSubmit}
-            className="w-full bg-gradient-to-r from-blue-500 to-purple-500 p-3 rounded-2xl font-semibold text-white shadow-lg"
+            disabled={isSubmitting}
+            className="w-full bg-linear-to-r from-blue-500 to-purple-500 p-3 rounded-2xl font-semibold text-white shadow-lg"
           >
-            {isRegister ? "Start Journey" : "Enter"}
+            {isSubmitting ? "Please wait..." : isRegister ? "Start Journey" : "Enter"}
           </button>
+
+          {authError && (
+            <p className="text-sm text-red-300 text-center">
+              {authError}
+            </p>
+          )}
 
           <button
             onClick={() => setIsRegister(!isRegister)}

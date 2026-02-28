@@ -12,14 +12,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-black text-white w-full">
+      <body className="w-full bg-black text-white">
         <AuthProvider>
           <SettingsProvider>
             <OnboardingProvider>
               <GoalProvider>
-                <div className="w-full min-h-screen bg-gradient-to-b from-slate-900 to-black overflow-hidden pb-28">
-                  {children}
-                  <BottomNav />
+                <div className="app-root">
+                  <div className="app-shell">
+                    <main className="app-screen">{children}</main>
+                    <BottomNav />
+                  </div>
                 </div>
               </GoalProvider>
             </OnboardingProvider>

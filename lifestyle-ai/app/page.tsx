@@ -16,7 +16,7 @@ export default function Home() {
     if (!isLoading && !isAuthenticated) {
       router.replace("/auth");
     }
-  }, [isAuthenticated, isLoading]);
+  }, [isAuthenticated, isLoading, router]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -28,7 +28,7 @@ export default function Home() {
   const circumference = 2 * Math.PI * 36;
 
   return (
-    <div className="w-full p-6 pb-28 space-y-8">
+    <div className="w-full p-6 space-y-8">
 
       {/* HEADER */}
       <div className="flex justify-between items-center">
@@ -56,7 +56,7 @@ export default function Home() {
       </div>
 
       {/* TODAY SUMMARY CARD */}
-      <div className="bg-slate-900/70 backdrop-blur-xl border border-slate-800 rounded-3xl p-6 shadow-lg">
+      <div className="app-card p-6">
         <div className="flex justify-between items-center">
 
           <div>
@@ -104,7 +104,7 @@ export default function Home() {
 
       {/* PRIMARY ACTION CARD */}
       <Link href="/dashboard">
-        <div className="bg-linear-to-r from-blue-600 to-blue-500 rounded-3xl p-6 shadow-xl active:scale-95 transition transform">
+        <div className="rounded-3xl bg-linear-to-r from-blue-600 to-blue-500 p-6 shadow-xl transition transform active:scale-95">
           <p className="text-lg font-semibold mb-1">
             Track Today’s Progress
           </p>
@@ -117,7 +117,7 @@ export default function Home() {
       {/* SECONDARY ACTIONS */}
       <div className="grid grid-cols-2 gap-4">
 
-        <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-700 rounded-3xl p-5 shadow-md active:scale-95 transition">
+        <div className="app-card p-5 active:scale-95 transition">
           <p className="font-semibold mb-1">
             Set New Goal
           </p>
@@ -127,7 +127,7 @@ export default function Home() {
         </div>
 
         <Link href="/upload">
-          <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-700 rounded-3xl p-5 shadow-md active:scale-95 transition">
+          <div className="app-card p-5 active:scale-95 transition">
             <p className="font-semibold mb-1">
               Upload Report
             </p>
@@ -141,7 +141,7 @@ export default function Home() {
 
       {/* AI QUICK ACCESS */}
       <Link href="/chat">
-        <div className="bg-linear-to-r from-blue-800 to-blue-900 rounded-3xl p-6 border border-blue-800 shadow-md active:scale-95 transition">
+        <div className="rounded-3xl bg-linear-to-r from-blue-800 to-blue-900 p-6 border border-blue-800 shadow-md active:scale-95 transition">
           <p className="text-sm text-slate-400 mb-2">
             How are you feeling today?
           </p>

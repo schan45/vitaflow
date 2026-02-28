@@ -1,17 +1,95 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useOnboarding } from "@/context/OnboardingContext";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Onboarding() {
   const router = useRouter();
-  const { data, update } = useOnboarding();
+  const { data, update, replaceAll } = useOnboarding();
+  const { isAuthenticated, accessToken } = useAuth();
   const [step, setStep] = useState(1);
+  const [isLoadedFromDb, setIsLoadedFromDb] = useState(false);
 
-  const finish = () => {
+  const finish = async () => {
+    if (isAuthenticated && accessToken) {
+      await fetch("/api/onboarding-data", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          onboarding: data,
+          completed: true,
+        }),
+      });
+    }
+
     router.push("/");
   };
+
+  useEffect(() => {
+    const loadOnboardingData = async () => {
+      if (!isAuthenticated || !accessToken) {
+        setIsLoadedFromDb(true);
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/onboarding-data", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        if (!res.ok) {
+          setIsLoadedFromDb(true);
+          return;
+        }
+
+        const response = (await res.json()) as {
+          onboarding?: Record<string, string>;
+        };
+
+        if (response.onboarding && Object.keys(response.onboarding).length > 0) {
+          replaceAll(response.onboarding);
+        }
+      } catch {
+        // keep in-memory onboarding if load fails
+      } finally {
+        setIsLoadedFromDb(true);
+      }
+    };
+
+    void loadOnboardingData();
+  }, [isAuthenticated, accessToken, replaceAll]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !accessToken || !isLoadedFromDb) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      void fetch("/api/onboarding-data", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          onboarding: data,
+          completed: false,
+        }),
+      });
+    }, 350);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [data, isAuthenticated, accessToken, isLoadedFromDb]);
 
   const handleNext = () => {
     if (step < 5) {

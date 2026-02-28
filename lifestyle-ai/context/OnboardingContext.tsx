@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 
 export type OnboardingData = {
   // I. Medical
@@ -42,6 +42,7 @@ export type OnboardingData = {
 type ContextType = {
   data: OnboardingData;
   update: (values: Partial<OnboardingData>) => void;
+  replaceAll: (values: OnboardingData) => void;
 };
 
 const OnboardingContext = createContext<ContextType | undefined>(
@@ -55,12 +56,16 @@ export function OnboardingProvider({
 }) {
   const [data, setData] = useState<OnboardingData>({});
 
-  const update = (values: Partial<OnboardingData>) => {
+  const update = useCallback((values: Partial<OnboardingData>) => {
     setData((prev) => ({ ...prev, ...values }));
-  };
+  }, []);
+
+  const replaceAll = useCallback((values: OnboardingData) => {
+    setData(values);
+  }, []);
 
   return (
-    <OnboardingContext.Provider value={{ data, update }}>
+    <OnboardingContext.Provider value={{ data, update, replaceAll }}>
       {children}
     </OnboardingContext.Provider>
   );

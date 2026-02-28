@@ -11,15 +11,15 @@ export default function Profile() {
   const { logout } = useAuth();
   const { data } = useOnboarding();
   const { goals, toggleGoal } = useGoals();
-  const username = typeof window !== 'undefined' ? localStorage.getItem("username") || "User" : "User";
+  const email = typeof window !== "undefined" ? localStorage.getItem("email") || "User" : "User";
 
   return (
-    <div className="w-full p-6 pb-28 space-y-6">
+    <div className="w-full p-6 space-y-6">
 
       {/* HEADER */}
-      <div className="relative bg-gradient-to-r from-blue-500 to-purple-500 rounded-[40px] p-8 text-white shadow-xl">
+      <div className="relative bg-linear-to-r from-blue-500 to-purple-500 rounded-[40px] p-8 text-white shadow-xl">
         <h1 className="text-2xl font-semibold">
-          👤 {username}
+          👤 {email}
         </h1>
         <p className="opacity-90">
           Your personalized health baseline
@@ -30,7 +30,7 @@ export default function Profile() {
       <div className="w-full space-y-5">
 
         {/* My Goals */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-[30px] p-6 border border-white/10">
+        <div className="app-card p-6 rounded-[30px]">
           <div className="flex justify-between items-start mb-4">
             <h2 className="font-semibold">My Goals</h2>
             <button onClick={() => router.push('/dashboard')} className="bg-blue-500 px-3 py-1 rounded-lg text-xs">Open</button>
@@ -53,7 +53,7 @@ export default function Profile() {
         </div>
 
         {/* I. MEDICAL CONTEXT */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-[30px] p-6 border border-white/10 space-y-3">
+        <div className="app-card rounded-[30px] p-6 space-y-3">
           <div className="flex justify-between items-start mb-4">
             <div className="flex items-center gap-2">
               <span className="text-lg text-blue-400">🩺</span>
@@ -86,7 +86,7 @@ export default function Profile() {
         </div>
 
         {/* II. BASELINE */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-[30px] p-6 border border-white/10 space-y-3">
+        <div className="app-card rounded-[30px] p-6 space-y-3">
           <div className="flex justify-between items-start mb-4">
             <div className="flex items-center gap-2">
               <span className="text-lg">📊</span>
@@ -122,7 +122,7 @@ export default function Profile() {
         </div>
 
         {/* III. LIFESTYLE */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-[30px] p-6 border border-white/10 space-y-3">
+        <div className="app-card rounded-[30px] p-6 space-y-3">
           <div className="flex justify-between items-start mb-4">
             <div className="flex items-center gap-2">
               <span className="text-lg text-green-400">🏃‍♂️</span>
@@ -158,7 +158,7 @@ export default function Profile() {
         </div>
 
         {/* IV. MOTIVATION */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-[30px] p-6 border border-white/10 space-y-3">
+        <div className="app-card rounded-[30px] p-6 space-y-3">
           <div className="flex justify-between items-start mb-4">
             <div className="flex items-center gap-2">
               <span className="text-lg text-pink-400">🔥</span>
@@ -197,7 +197,7 @@ export default function Profile() {
         </div>
 
         {/* V. PRACTICAL */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-[30px] p-6 border border-white/10 space-y-3">
+        <div className="app-card rounded-[30px] p-6 space-y-3">
           <div className="flex justify-between items-start mb-3">
             <div className="flex items-center gap-2">
               <span className="text-lg text-amber-400">🧩</span>
@@ -224,8 +224,8 @@ export default function Profile() {
 
       <div className="pt-6">
         <button
-          onClick={() => {
-            logout();
+          onClick={async () => {
+            await logout();
             router.push("/auth");
           }}
           className="w-full bg-red-500 hover:bg-red-600 transition text-white p-3 rounded-2xl font-semibold"

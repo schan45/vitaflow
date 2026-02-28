@@ -14,13 +14,13 @@ export default function Settings() {
       style={{
         transform: `scale(${fontScale})`,
       }}
-      className="p-6 pb-28 space-y-6"
+      className="p-6 space-y-6"
     >
       <h1 className="text-2xl font-semibold">
         Settings
       </h1>
 
-      <div className="bg-slate-800 p-5 rounded-2xl space-y-3">
+      <div className="app-card p-5 rounded-2xl space-y-3">
         <p className="font-medium">Font Size</p>
         <div className="flex gap-4">
           <button

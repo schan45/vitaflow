@@ -1,7 +1,6 @@
 "use client";
 
 import { useGoals } from "@/context/GoalContext";
-import { cardStyle } from "@/lib/ui";
 import {
   LineChart,
   Line,
@@ -44,7 +43,7 @@ export default function Dashboard() {
   const streak = completedCount === goals.length ? 5 : 4;
 
   return (
-    <div className="w-full p-6 pb-28 space-y-6">
+    <div className="w-full p-6 space-y-6">
       <h1 className="text-2xl font-semibold mb-6">
         Your Progress
       </h1>
@@ -52,7 +51,7 @@ export default function Dashboard() {
       {/* Progress Ring */}
       <div className="flex justify-center mb-8">
         <div className="relative w-36 h-36">
-          <svg className="w-full h-full rotate-[-90deg]">
+          <svg className="w-full h-full -rotate-90">
             <circle
               cx="72"
               cy="72"
@@ -85,7 +84,7 @@ export default function Dashboard() {
       </div>
 
       {/* Streak Card */}
-      <div className="bg-blue-800 rounded-3xl p-5 mb-6 flex justify-between items-center">
+      <div className="app-card bg-blue-900/60 p-5 mb-6 flex justify-between items-center">
         <div>
           <p className="text-sm text-slate-400">
             Current Streak
@@ -101,7 +100,7 @@ export default function Dashboard() {
       </div>
 
       {/* Weekly Line Chart */}
-      <div className="w-full bg-gradient-to-br from-slate-700/60 to-slate-800/60 backdrop-blur-xl rounded-3xl p-6 shadow-xl mt-6">
+      <div className="app-card w-full p-6 mt-6">
         <h2 className="flex items-center gap-2 font-semibold text-lg mb-3">
           📈 Weekly Progress
         </h2>
@@ -122,7 +121,7 @@ export default function Dashboard() {
       </div>
 
       {/* Daily Bar Chart */}
-      <div className="w-full bg-gradient-to-br from-slate-700/60 to-slate-800/60 backdrop-blur-xl rounded-3xl p-6 shadow-xl mt-6">
+      <div className="app-card w-full p-6 mt-6">
         <h2 className="flex items-center gap-2 font-semibold text-lg mb-3">
           ✅ Daily Completion
         </h2>
@@ -138,7 +137,7 @@ export default function Dashboard() {
       </div>
 
       {/* Pie Chart */}
-      <div className="w-full bg-gradient-to-br from-slate-700/60 to-slate-800/60 backdrop-blur-xl rounded-3xl p-6 shadow-xl mt-6">
+      <div className="app-card w-full p-6 mt-6">
         <h2 className="flex items-center gap-2 font-semibold text-lg mb-3">
           🎯 Goal Distribution
         </h2>
@@ -171,10 +170,10 @@ export default function Dashboard() {
             className={`p-4 rounded-2xl flex justify-between items-center transition cursor-pointer ${
               habit.completed
                 ? "bg-blue-600 text-white"
-                : "bg-blue-800 text-slate-200"
+                : "bg-slate-800 text-slate-200 border border-slate-700"
             }`}
           >
-            <span>{habit.name}</span>
+            <span>{habit.title}</span>
             <div
               className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                 habit.completed

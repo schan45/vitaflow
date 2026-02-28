@@ -22,8 +22,54 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Inter, Arial, Helvetica, sans-serif;
   font-size: 17px;
+  min-height: 100vh;
+}
+
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  background: linear-gradient(to bottom, rgb(15 23 42), rgb(2 6 23));
+}
+
+.app-shell {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100vh;
+  position: relative;
+  border-left: 1px solid rgb(30 41 59 / 0.5);
+  border-right: 1px solid rgb(30 41 59 / 0.5);
+  background: linear-gradient(to bottom, rgb(15 23 42 / 0.9), rgb(2 6 23));
+}
+
+.app-screen {
+  min-height: 100vh;
+  padding-bottom: 110px;
+}
+
+.app-card {
+  background: rgb(15 23 42 / 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgb(51 65 85 / 0.8);
+  border-radius: 24px;
+  box-shadow: 0 12px 30px rgb(2 6 23 / 0.45);
+}
+
+.app-input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgb(15 23 42 / 0.8);
+  border: 1px solid rgb(51 65 85);
+  color: rgb(226 232 240);
+  outline: none;
+}
+
+.app-input:focus {
+  border-color: rgb(59 130 246);
+  box-shadow: 0 0 0 2px rgb(59 130 246 / 0.2);
 }
 
 /* hide scrollbar for mobile vibe */
@@ -55,6 +101,7 @@ html.light button {
 
 button {
   font-size: 16px;
+  cursor: pointer;
 }
 
 h1, h2, h3 {

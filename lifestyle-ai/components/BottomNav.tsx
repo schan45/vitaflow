@@ -12,13 +12,13 @@ export default function BottomNav() {
     return (
       <Link
         href={path}
-        className="flex flex-1 justify-center items-center py-4"
+        className="flex flex-1 justify-center items-center"
       >
         <div
-          className={`min-w-[90px] text-center px-6 py-3 rounded-full text-base font-semibold transition ${
+          className={`min-w-20.5 text-center px-4 py-2 rounded-full text-sm font-semibold transition ${
             active
               ? "bg-blue-500 text-white shadow-md"
-              : "bg-slate-700 text-slate-200"
+              : "text-slate-300"
           }`}
         >
           {label}
@@ -28,11 +28,13 @@ export default function BottomNav() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 w-full bg-slate-800/80 border-t border-slate-700 flex shadow-2xl">
-      {navItem("/", "Home")}
-      {navItem("/chat", "Chat")}
-      {navItem("/dashboard", "Tracker")}
-      {navItem("/profile", "Profile")}
+    <div className="fixed bottom-0 left-1/2 z-40 w-full max-w-120 -translate-x-1/2 px-4 pb-4">
+      <div className="flex items-center rounded-2xl border border-slate-700 bg-slate-900/90 p-2 shadow-2xl backdrop-blur-xl">
+        {navItem("/", "Home")}
+        {navItem("/chat", "Chat")}
+        {navItem("/dashboard", "Tracker")}
+        {navItem("/profile", "Profile")}
+      </div>
     </div>
   );
 }
