@@ -87,6 +87,8 @@ export default function Auth() {
     : [];
   const isRegisterPasswordValid = passwordValidationErrors.length === 0;
   const isSubmitDisabled = isSubmitting || (isRegister && !isRegisterPasswordValid);
+  const hasMinLength = password.length >= 6;
+  const hasUppercase = /[A-Z]/.test(password);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
@@ -118,16 +120,21 @@ export default function Auth() {
             className="app-input"
           />
 
-          {isRegister && password.length > 0 && passwordValidationErrors.length > 0 && (
-            <p className="text-xs text-amber-300">
-              {passwordValidationErrors.join(" ")}
-            </p>
+          {isRegister && (
+            <div className="text-xs space-y-1">
+              <p className={hasMinLength ? "text-green-300" : "text-amber-300"}>
+                {hasMinLength ? "✓" : "•"} At least 6 characters
+              </p>
+              <p className={hasUppercase ? "text-green-300" : "text-amber-300"}>
+                {hasUppercase ? "✓" : "•"} At least one uppercase letter
+              </p>
+            </div>
           )}
 
           <button
             onClick={handleSubmit}
             disabled={isSubmitDisabled}
-            className="w-full bg-linear-to-r from-blue-500 to-purple-500 p-3 rounded-2xl font-semibold text-white shadow-lg"
+            className="w-full bg-linear-to-r from-blue-500 to-purple-500 p-3 rounded-2xl font-semibold text-white shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {isSubmitting ? "Please wait..." : isRegister ? "Register" : "Enter"}
           </button>

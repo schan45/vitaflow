@@ -121,6 +121,7 @@ export default function Chat() {
   const [transcript, setTranscript] = useState("");
   const [summary, setSummary] = useState("");
   const [isRecording, setIsRecording] = useState(false);
+  const [voiceLanguage, setVoiceLanguage] = useState<"en-US" | "hu-HU">("en-US");
   const [voiceError, setVoiceError] = useState("");
   const [risk, setRisk] = useState<RiskInfo | null>(null);
   const [doctorRecommendation, setDoctorRecommendation] =
@@ -362,7 +363,7 @@ export default function Chat() {
     recognitionRef.current = recognition;
     manualStopRef.current = false;
     finalizedTranscriptRef.current = "";
-    recognition.lang = navigator.language || "en-US";
+    recognition.lang = voiceLanguage;
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
     (recognition as BrowserSpeechRecognition & SpeechRecognitionConfigurable).continuous = true;
@@ -484,6 +485,19 @@ export default function Chat() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
           />
+          <button
+            onClick={() => {
+              if (isRecording) {
+                return;
+              }
+
+              setVoiceLanguage((prev) => (prev === "en-US" ? "hu-HU" : "en-US"));
+            }}
+            disabled={isRecording}
+            className="px-3 py-2 rounded-full mr-2 text-xs bg-slate-700 text-slate-200 disabled:opacity-50"
+          >
+            {voiceLanguage === "en-US" ? "EN" : "HU"}
+          </button>
           <button
             onClick={() => {
               void startRecording();

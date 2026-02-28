@@ -2,14 +2,48 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useOnboarding } from "@/context/OnboardingContext";
+import { useOnboarding, type OnboardingData } from "@/context/OnboardingContext";
 import { useAuth } from "@/context/AuthContext";
 import { useGoals } from "@/context/GoalContext";
+import { supabaseBrowser } from "@/lib/supabaseBrowser";
 
 type GeneratedChallenge = {
   title: string;
   frequency: "Daily" | "Weekly";
 };
+
+function buildLocalFallbackChallenges(input: OnboardingData): GeneratedChallenge[] {
+  const workType = (input.workType || "").toLowerCase();
+  const weeklyExercise = (input.weeklyExercise || "").toLowerCase();
+  const isSedentary =
+    workType.includes("sitting") ||
+    workType.includes("desk") ||
+    workType.includes("office") ||
+    workType.includes("ül") ||
+    workType.includes("iroda");
+  const lowExercise =
+    weeklyExercise.includes("almost never") ||
+    weeklyExercise.includes("never") ||
+    weeklyExercise.includes("1-2") ||
+    weeklyExercise.includes("soha") ||
+    weeklyExercise.includes("alig");
+
+  if (isSedentary && lowExercise) {
+    return [
+      { title: "Week 1: Walk briskly for 20 minutes", frequency: "Daily" },
+      { title: "Week 2: Run 1 km at easy pace", frequency: "Weekly" },
+      { title: "Week 3: Run 1.5 km at easy pace", frequency: "Weekly" },
+      { title: "Week 4: Run 2 km at easy pace", frequency: "Weekly" },
+    ];
+  }
+
+  return [
+    { title: "Week 1: Walk 7000+ steps", frequency: "Daily" },
+    { title: "Week 2: Add one 25-minute cardio session", frequency: "Weekly" },
+    { title: "Week 3: Increase weekly cardio volume by 10%", frequency: "Weekly" },
+    { title: "Week 4: Add one strength-focused session", frequency: "Weekly" },
+  ];
+}
 
 export default function Onboarding() {
   const router = useRouter();
@@ -20,7 +54,20 @@ export default function Onboarding() {
   const [isFinishing, setIsFinishing] = useState(false);
 
   const generatePersonalizedChallenges = async () => {
-    if (!accessToken || goals.length > 0) {
+    const hasProgressiveGoal = goals.some((goal) => /^week\s*\d+\s*:/i.test(goal.title));
+    if (hasProgressiveGoal) {
+      return;
+    }
+
+    let token = accessToken;
+
+    if (!token) {
+      const { data: sessionData } = await supabaseBrowser.auth.getSession();
+      token = sessionData.session?.access_token ?? null;
+    }
+
+    if (!token) {
+      addGoalsBulk(buildLocalFallbackChallenges(data));
       return;
     }
 
@@ -28,17 +75,19 @@ export default function Onboarding() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ onboarding: data }),
     });
 
     if (!res.ok) {
+      addGoalsBulk(buildLocalFallbackChallenges(data));
       return;
     }
 
     const payload = (await res.json()) as { challenges?: GeneratedChallenge[] };
     if (!Array.isArray(payload.challenges) || payload.challenges.length === 0) {
+      addGoalsBulk(buildLocalFallbackChallenges(data));
       return;
     }
 
@@ -166,9 +215,14 @@ export default function Onboarding() {
               <div className="flex gap-2">
                 {["Male", "Female", "Other"].map((g) => (
                   <button
+                    type="button"
                     key={g}
                     onClick={() => update({ gender: g })}
-                    className="flex-1 p-2 rounded-xl bg-slate-700 hover:bg-blue-600 transition"
+                    className={`flex-1 p-2 rounded-xl transition ${
+                      data.gender === g
+                        ? "bg-blue-600 text-white"
+                        : "bg-slate-700 hover:bg-blue-600"
+                    }`}
                   >
                     {g}
                   </button>
@@ -227,6 +281,7 @@ export default function Onboarding() {
                 "5+ times / week",
               ].map((option) => (
                 <button
+                  type="button"
                   key={option}
                   onClick={() =>
                     update({ weeklyExercise: option })
