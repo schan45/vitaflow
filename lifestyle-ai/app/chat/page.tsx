@@ -109,7 +109,7 @@ function buildContextualFallback(text: string): string {
 }
 
 export default function Chat() {
-  const { isAuthenticated, accessToken } = useAuth();
+  const { isAuthenticated, accessToken, userId } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "ai",
@@ -280,7 +280,8 @@ export default function Chat() {
 
   const sendToBackend = async (text: string) => {
     try {
-      const hasReport = localStorage.getItem("hasUploadedReport") === "true";
+      const reportKey = userId ? `hasUploadedReport:${userId}` : "hasUploadedReport";
+      const hasReport = localStorage.getItem(reportKey) === "true";
       const res = await fetch("/api/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

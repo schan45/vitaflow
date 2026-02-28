@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { supabaseBrowser } from "@/lib/supabaseBrowser";
 
 export default function Auth() {
   const router = useRouter();
@@ -13,25 +14,65 @@ export default function Auth() {
   const [authError, setAuthError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const getPasswordValidationErrors = (value: string) => {
+    const errors: string[] = [];
+
+    if (value.length < 6) {
+      errors.push("Password must be at least 6 characters.");
+    }
+
+    if (!/[A-Z]/.test(value)) {
+      errors.push("Password must include at least one uppercase letter.");
+    }
+
+    return errors;
+  };
+
+  const initializeProfile = async (emailValue: string) => {
+    const { data } = await supabaseBrowser.auth.getSession();
+    const token = data.session?.access_token;
+
+    if (!token) {
+      return;
+    }
+
+    await fetch("/api/profile/init", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ email: emailValue }),
+    });
+  };
+
   const handleSubmit = async () => {
     setAuthError("");
 
     if (!email || !password) return;
+
+    if (isRegister) {
+      const passwordErrors = getPasswordValidationErrors(password);
+      if (passwordErrors.length > 0) {
+        setAuthError(passwordErrors.join(" "));
+        return;
+      }
+    }
 
     setIsSubmitting(true);
 
     try {
       if (isRegister) {
         await register({ email, password });
-      } else {
-        await login({ email, password });
-      }
-
-      localStorage.setItem("email", email);
-
-      if (isRegister) {
+        localStorage.setItem("email", email);
+        localStorage.setItem("hasUploadedReport", "false");
+        await initializeProfile(email);
         router.push("/onboarding");
       } else {
+        await login({ email, password });
+        localStorage.setItem("email", email);
+        localStorage.setItem("hasUploadedReport", "false");
+        await initializeProfile(email);
         router.push("/");
       }
     } catch (error: unknown) {
@@ -40,6 +81,12 @@ export default function Auth() {
       setIsSubmitting(false);
     }
   };
+
+  const passwordValidationErrors = isRegister
+    ? getPasswordValidationErrors(password)
+    : [];
+  const isRegisterPasswordValid = passwordValidationErrors.length === 0;
+  const isSubmitDisabled = isSubmitting || (isRegister && !isRegisterPasswordValid);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
@@ -71,12 +118,18 @@ export default function Auth() {
             className="app-input"
           />
 
+          {isRegister && password.length > 0 && passwordValidationErrors.length > 0 && (
+            <p className="text-xs text-amber-300">
+              {passwordValidationErrors.join(" ")}
+            </p>
+          )}
+
           <button
             onClick={handleSubmit}
-            disabled={isSubmitting}
+            disabled={isSubmitDisabled}
             className="w-full bg-linear-to-r from-blue-500 to-purple-500 p-3 rounded-2xl font-semibold text-white shadow-lg"
           >
-            {isSubmitting ? "Please wait..." : isRegister ? "Start Journey" : "Enter"}
+            {isSubmitting ? "Please wait..." : isRegister ? "Register" : "Enter"}
           </button>
 
           {authError && (
@@ -86,7 +139,10 @@ export default function Auth() {
           )}
 
           <button
-            onClick={() => setIsRegister(!isRegister)}
+            onClick={() => {
+              setAuthError("");
+              setIsRegister(!isRegister);
+            }}
             className="text-sm text-slate-300 w-full"
           >
             {isRegister

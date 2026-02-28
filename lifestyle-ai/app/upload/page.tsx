@@ -1,14 +1,17 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Upload() {
+  const { userId } = useAuth();
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const saveUploadFlag = (file: File) => {
-    localStorage.setItem("hasUploadedReport", "true");
+    const key = userId ? `hasUploadedReport:${userId}` : "hasUploadedReport";
+    localStorage.setItem(key, "true");
     setUploadedFileName(file.name);
   };
 

@@ -3,21 +3,68 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useOnboarding } from "@/context/OnboardingContext";
+import { useAuth } from "@/context/AuthContext";
+import { useGoals } from "@/context/GoalContext";
+
+type GeneratedChallenge = {
+  title: string;
+  frequency: "Daily" | "Weekly";
+};
 
 export default function Onboarding() {
   const router = useRouter();
+  const { accessToken } = useAuth();
+  const { goals, addGoalsBulk } = useGoals();
   const { data, update } = useOnboarding();
   const [step, setStep] = useState(1);
+  const [isFinishing, setIsFinishing] = useState(false);
 
-  const finish = () => {
-    router.push("/");
+  const generatePersonalizedChallenges = async () => {
+    if (!accessToken || goals.length > 0) {
+      return;
+    }
+
+    const res = await fetch("/api/challenges/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ onboarding: data }),
+    });
+
+    if (!res.ok) {
+      return;
+    }
+
+    const payload = (await res.json()) as { challenges?: GeneratedChallenge[] };
+    if (!Array.isArray(payload.challenges) || payload.challenges.length === 0) {
+      return;
+    }
+
+    addGoalsBulk(payload.challenges);
   };
 
-  const handleNext = () => {
+  const finish = async () => {
+    setIsFinishing(true);
+
+    try {
+      await generatePersonalizedChallenges();
+    } finally {
+      setIsFinishing(false);
+      router.push("/");
+    }
+  };
+
+  const handleNext = async () => {
+    if (isFinishing) {
+      return;
+    }
+
     if (step < 5) {
       setStep(step + 1);
     } else {
-      finish();
+      await finish();
     }
   };
 
@@ -33,7 +80,7 @@ export default function Onboarding() {
         {/* Progress Bar */}
         <div className="w-full bg-slate-700 rounded-full h-2">
           <div
-            className="bg-gradient-to-r from-blue-400 to-indigo-500 h-2 rounded-full transition-all"
+            className="bg-linear-to-r from-blue-400 to-indigo-500 h-2 rounded-full transition-all"
             style={{ width: `${(step / 5) * 100}%` }}
           />
         </div>
@@ -334,9 +381,10 @@ export default function Onboarding() {
           </button>
           <button
             onClick={handleNext}
+            disabled={isFinishing}
             className="flex-1 bg-blue-600 p-3 rounded-xl"
           >
-            {step === 5 ? "Complete" : "Next"}
+            {step === 5 ? (isFinishing ? "Generating challenges..." : "Complete") : "Next"}
           </button>
         </div>
       </div>

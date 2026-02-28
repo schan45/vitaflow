@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useOnboarding } from "@/context/OnboardingContext";
@@ -8,10 +9,39 @@ import { useGoals } from "@/context/GoalContext";
 
 export default function Profile() {
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout, accessToken } = useAuth();
   const { data } = useOnboarding();
   const { goals, toggleGoal } = useGoals();
-  const email = typeof window !== "undefined" ? localStorage.getItem("email") || "User" : "User";
+  const [displayName, setDisplayName] = useState("User");
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!accessToken) {
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/profile/init", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        if (!res.ok) {
+          return;
+        }
+
+        const payload = (await res.json()) as { displayName?: string; email?: string };
+        const resolvedName = payload.displayName || payload.email || "User";
+        setDisplayName(resolvedName);
+      } catch {
+        // keep fallback name on transient errors
+      }
+    };
+
+    void loadProfile();
+  }, [accessToken]);
 
   return (
     <div className="w-full p-6 space-y-6">
@@ -19,7 +49,7 @@ export default function Profile() {
       {/* HEADER */}
       <div className="relative bg-linear-to-r from-blue-500 to-purple-500 rounded-[40px] p-8 text-white shadow-xl">
         <h1 className="text-2xl font-semibold">
-          👤 {email}
+          👤 {displayName}
         </h1>
         <p className="opacity-90">
           Your personalized health baseline
@@ -36,19 +66,23 @@ export default function Profile() {
             <button onClick={() => router.push('/dashboard')} className="bg-blue-500 px-3 py-1 rounded-lg text-xs">Open</button>
           </div>
           <div className="space-y-2">
-            {goals.map((g) => (
-              <div key={g.id} className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium">{g.title}</div>
-                  <div className="text-sm text-slate-400">{g.frequency}</div>
+            {goals.length === 0 ? (
+              <div className="text-sm text-slate-400">No goals yet.</div>
+            ) : (
+              goals.map((g) => (
+                <div key={g.id} className="flex items-center justify-between">
+                  <div>
+                    <div className="font-medium">{g.title}</div>
+                    <div className="text-sm text-slate-400">{g.frequency}</div>
+                  </div>
+                  <div>
+                    <button onClick={() => toggleGoal(g.id)} className={`px-3 py-1 rounded-lg ${g.completed ? 'bg-green-600' : 'bg-slate-700/70'}`}>
+                      {g.completed ? 'Done' : 'Mark'}
+                    </button>
+                  </div>
                 </div>
-                <div>
-                  <button onClick={() => toggleGoal(g.id)} className={`px-3 py-1 rounded-lg ${g.completed ? 'bg-green-600' : 'bg-slate-700/70'}`}>
-                    {g.completed ? 'Done' : 'Mark'}
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 

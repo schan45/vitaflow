@@ -5,11 +5,12 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import GoalModal from "@/components/GoalModal";
 import { useAuth } from "@/context/AuthContext";
+import { useGoals } from "@/context/GoalContext";
 
 export default function Home() {
   const { isAuthenticated, isLoading } = useAuth();
+  const { goals } = useGoals();
   const router = useRouter();
-  const [progress, setProgress] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -18,12 +19,10 @@ export default function Home() {
     }
   }, [isAuthenticated, isLoading, router]);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setProgress(67);
-    }, 300);
-    return () => clearTimeout(timeout);
-  }, []);
+  const totalGoals = goals.length;
+  const completedCount = goals.filter((goal) => goal.completed).length;
+  const progress = totalGoals > 0 ? Math.round((completedCount / totalGoals) * 100) : 0;
+  const streak = completedCount;
 
   const circumference = 2 * Math.PI * 36;
 
@@ -42,8 +41,11 @@ export default function Home() {
         </div>
 
         <div className="flex items-center gap-3">
-          <div onClick={() => setIsModalOpen(true)} className="bg-blue-800 px-3 py-1 rounded-full text-xs text-blue-400 cursor-pointer">
-            🔥 4 day streak
+          <div
+            onClick={() => router.push("/dashboard?streakModal=1")}
+            className="bg-blue-800 px-3 py-1 rounded-full text-xs text-blue-400 cursor-pointer"
+          >
+            🔥 {streak} day streak
           </div>
 
           <div
@@ -64,7 +66,7 @@ export default function Home() {
               Today’s Progress
             </p>
             <p className="text-lg font-semibold">
-              2 of 3 habits completed
+              {completedCount} of {totalGoals} habits completed
             </p>
           </div>
 
@@ -117,7 +119,10 @@ export default function Home() {
       {/* SECONDARY ACTIONS */}
       <div className="grid grid-cols-2 gap-4">
 
-        <div className="app-card p-5 active:scale-95 transition">
+        <div
+          onClick={() => setIsModalOpen(true)}
+          className="app-card p-5 active:scale-95 transition cursor-pointer"
+        >
           <p className="font-semibold mb-1">
             Set New Goal
           </p>
