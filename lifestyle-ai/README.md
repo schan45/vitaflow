@@ -1,4 +1,4 @@
-# VitaFlow – AI Lifestyle Medicine Coach
+# VitaFlow – Bridging the gap between health data and daily consistency
 
 VitaFlow egy prevention-first egészségügyi lifestyle platform, amely onboarding kérdőív + AI elemzés alapján személyre szabott challenge-eket ad, és végigköveti a felhasználó haladását. (mobilapp elrendezés, így webes felüleről mobilon is megnyitható)
 
