@@ -5,44 +5,33 @@ import { useAuth } from "@/context/AuthContext";
 import { useOnboarding } from "@/context/OnboardingContext";
 import { useGoals } from "@/context/GoalContext";
 
+
 export default function Profile() {
   const router = useRouter();
   const { logout } = useAuth();
   const { data } = useOnboarding();
   const { goals, toggleGoal } = useGoals();
+  const username = typeof window !== 'undefined' ? localStorage.getItem("username") || "User" : "User";
 
   return (
-    <div className="p-6 pb-28 space-y-8">
+    <div className="w-full p-6 pb-28 space-y-6">
 
       {/* HEADER */}
-      <div className="flex items-center gap-4">
-        <div className="w-20 h-20 rounded-2xl bg-slate-700/70 backdrop-blur-lg flex items-center justify-center">
-          👤
-        </div>
-
-        <div>
-          <h1 className="text-xl font-semibold">
-            Profile
-          </h1>
-          <p className="text-slate-400 text-sm">
-            Your health journey
-          </p>
-        </div>
-
-        <button
-          onClick={() => router.push("/settings")}
-          className="ml-auto bg-blue-500 px-4 py-2 rounded-xl text-sm"
-        >
-          Settings
-        </button>
+      <div className="relative bg-gradient-to-r from-blue-500 to-purple-500 rounded-[40px] p-8 text-white shadow-xl">
+        <h1 className="text-2xl font-semibold">
+          👤 {username}
+        </h1>
+        <p className="opacity-90">
+          Your personalized health baseline
+        </p>
       </div>
 
       {/* PROFILE SECTIONS */}
-      <div className="space-y-5">
+      <div className="w-full space-y-5">
 
         {/* My Goals */}
-        <div className="bg-slate-700/70 backdrop-blur-lg rounded-2xl p-5">
-          <div className="flex justify-between items-start mb-3">
+        <div className="bg-white/10 backdrop-blur-xl rounded-[30px] p-6 border border-white/10">
+          <div className="flex justify-between items-start mb-4">
             <h2 className="font-semibold">My Goals</h2>
             <button onClick={() => router.push('/dashboard')} className="bg-blue-500 px-3 py-1 rounded-lg text-xs">Open</button>
           </div>
@@ -64,11 +53,14 @@ export default function Profile() {
         </div>
 
         {/* I. MEDICAL CONTEXT */}
-        <div className="bg-slate-700/70 backdrop-blur-lg rounded-2xl p-5">
-          <div className="flex justify-between items-start mb-3">
-            <h2 className="font-semibold">
-              I. Medical Context
-            </h2>
+        <div className="bg-white/10 backdrop-blur-xl rounded-[30px] p-6 border border-white/10 space-y-3">
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-lg text-blue-400">🩺</span>
+              <h2 className="font-semibold">
+                Medical Context
+              </h2>
+            </div>
             <button
               onClick={() => router.push("/onboarding")}
               className="bg-blue-500 px-3 py-1 rounded-lg text-xs"
@@ -94,11 +86,14 @@ export default function Profile() {
         </div>
 
         {/* II. BASELINE */}
-        <div className="bg-slate-700/70 backdrop-blur-lg rounded-2xl p-5">
-          <div className="flex justify-between items-start mb-3">
-            <h2 className="font-semibold">
-              II. Baseline
-            </h2>
+        <div className="bg-white/10 backdrop-blur-xl rounded-[30px] p-6 border border-white/10 space-y-3">
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">📊</span>
+              <h2 className="font-semibold">
+                Baseline
+              </h2>
+            </div>
             <button
               onClick={() => router.push("/onboarding")}
               className="bg-blue-500 px-3 py-1 rounded-lg text-xs"
@@ -127,11 +122,14 @@ export default function Profile() {
         </div>
 
         {/* III. LIFESTYLE */}
-        <div className="bg-slate-700/70 backdrop-blur-lg rounded-2xl p-5">
-          <div className="flex justify-between items-start mb-3">
-            <h2 className="font-semibold">
-              III. Lifestyle
-            </h2>
+        <div className="bg-white/10 backdrop-blur-xl rounded-[30px] p-6 border border-white/10 space-y-3">
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-lg text-green-400">🏃‍♂️</span>
+              <h2 className="font-semibold">
+                Lifestyle
+              </h2>
+            </div>
             <button
               onClick={() => router.push("/onboarding")}
               className="bg-blue-500 px-3 py-1 rounded-lg text-xs"
@@ -160,11 +158,14 @@ export default function Profile() {
         </div>
 
         {/* IV. MOTIVATION */}
-        <div className="bg-slate-700/70 backdrop-blur-lg rounded-2xl p-5">
-          <div className="flex justify-between items-start mb-3">
-            <h2 className="font-semibold">
-              IV. Motivation
-            </h2>
+        <div className="bg-white/10 backdrop-blur-xl rounded-[30px] p-6 border border-white/10 space-y-3">
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-lg text-pink-400">🔥</span>
+              <h2 className="font-semibold">
+                Motivation
+              </h2>
+            </div>
             <button
               onClick={() => router.push("/onboarding")}
               className="bg-blue-500 px-3 py-1 rounded-lg text-xs"
@@ -188,16 +189,22 @@ export default function Profile() {
             Reminders: {data.reminders || "-"}
           </p>
           <p className="text-sm text-slate-400">
-            Readiness: {data.readiness || "-"}
+            Readiness: 
+            <span className="inline-block ml-2 px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-medium">
+              {data.readiness || "0"}/10
+            </span>
           </p>
         </div>
 
         {/* V. PRACTICAL */}
-        <div className="bg-slate-700/70 backdrop-blur-lg rounded-2xl p-5">
+        <div className="bg-white/10 backdrop-blur-xl rounded-[30px] p-6 border border-white/10 space-y-3">
           <div className="flex justify-between items-start mb-3">
-            <h2 className="font-semibold">
-              V. Practical
-            </h2>
+            <div className="flex items-center gap-2">
+              <span className="text-lg text-amber-400">🧩</span>
+              <h2 className="font-semibold">
+                Practical
+              </h2>
+            </div>
             <button
               onClick={() => router.push("/onboarding")}
               className="bg-blue-500 px-3 py-1 rounded-lg text-xs"

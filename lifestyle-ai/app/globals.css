@@ -33,13 +33,24 @@ body {
 
 /* theme classes applied to <html> via SettingsContext */
 html.dark {
-  --background: #0B1220;
-  --foreground: #F1F5F9;
+  background: radial-gradient(circle at 20% 20%, #1e3a8a 0%, transparent 40%),
+              radial-gradient(circle at 80% 80%, #7c3aed 0%, transparent 40%),
+              #0f172a;
+  color: #f1f5f9;
 }
 
 html.light {
   --background: #ffffff;
   --foreground: #171717;
+}
+
+html.light .app-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+html.light button {
+  color: rgba(255, 255, 255, 1);
 }
 
 button {
@@ -61,4 +72,11 @@ button {
   backdrop-filter: blur(12px);
   border-radius: 24px;
   padding: 20px;
+}
+
+.card-soft {
+  background: rgba(100, 116, 139, 0.5);
+  backdrop-filter: blur(10px);
+  border-radius: 28px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }

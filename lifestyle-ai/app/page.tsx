@@ -28,7 +28,7 @@ export default function Home() {
   const circumference = 2 * Math.PI * 36;
 
   return (
-    <div className="p-6 pb-28 space-y-8">
+    <div className="w-full p-6 pb-28 space-y-8">
 
       {/* HEADER */}
       <div className="flex justify-between items-center">

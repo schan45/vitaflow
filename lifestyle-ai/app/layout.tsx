@@ -12,12 +12,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-black text-white flex justify-center">
+      <body className="bg-black text-white w-full">
         <AuthProvider>
           <SettingsProvider>
             <OnboardingProvider>
               <GoalProvider>
-                <div className="relative w-full max-w-md min-h-screen bg-gradient-to-b from-slate-900 to-black overflow-hidden pb-28">
+                <div className="w-full min-h-screen bg-gradient-to-b from-slate-900 to-black overflow-hidden pb-28">
                   {children}
                   <BottomNav />
                 </div>

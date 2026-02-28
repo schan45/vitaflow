@@ -1,6 +1,7 @@
 "use client";
 
 import { useGoals } from "@/context/GoalContext";
+import { cardStyle } from "@/lib/ui";
 import {
   LineChart,
   Line,
@@ -30,7 +31,7 @@ const habitData = [
   { name: "Remaining", value: 35 },
 ];
 
-const COLORS = ["#3b82f6", "#475569"];
+const COLORS = ["#8b5cf6", "#06b6d4"];
 
 export default function Dashboard() {
   const { goals, toggleGoal } = useGoals();
@@ -43,7 +44,7 @@ export default function Dashboard() {
   const streak = completedCount === goals.length ? 5 : 4;
 
   return (
-    <div className="p-6 pb-28">
+    <div className="w-full p-6 pb-28 space-y-6">
       <h1 className="text-2xl font-semibold mb-6">
         Your Progress
       </h1>
@@ -100,9 +101,9 @@ export default function Dashboard() {
       </div>
 
       {/* Weekly Line Chart */}
-      <div className="bg-slate-700/60 rounded-2xl p-5 mt-6">
-        <h2 className="mb-3 font-semibold">
-          Weekly Progress
+      <div className="w-full bg-gradient-to-br from-slate-700/60 to-slate-800/60 backdrop-blur-xl rounded-3xl p-6 shadow-xl mt-6">
+        <h2 className="flex items-center gap-2 font-semibold text-lg mb-3">
+          📈 Weekly Progress
         </h2>
 
         <ResponsiveContainer width="100%" height={200}>
@@ -113,7 +114,7 @@ export default function Dashboard() {
             <Line
               type="monotone"
               dataKey="progress"
-              stroke="#3b82f6"
+              stroke="#8b5cf6"
               strokeWidth={3}
             />
           </LineChart>
@@ -121,9 +122,9 @@ export default function Dashboard() {
       </div>
 
       {/* Daily Bar Chart */}
-      <div className="bg-slate-700/60 rounded-2xl p-5 mt-6">
-        <h2 className="mb-3 font-semibold">
-          Daily Completion
+      <div className="w-full bg-gradient-to-br from-slate-700/60 to-slate-800/60 backdrop-blur-xl rounded-3xl p-6 shadow-xl mt-6">
+        <h2 className="flex items-center gap-2 font-semibold text-lg mb-3">
+          ✅ Daily Completion
         </h2>
 
         <ResponsiveContainer width="100%" height={200}>
@@ -131,15 +132,15 @@ export default function Dashboard() {
             <XAxis dataKey="day" />
             <YAxis />
             <Tooltip />
-            <Bar dataKey="progress" fill="#3b82f6" />
+            <Bar dataKey="progress" fill="#06b6d4" />
           </BarChart>
         </ResponsiveContainer>
       </div>
 
       {/* Pie Chart */}
-      <div className="bg-slate-700/60 rounded-2xl p-5 mt-6">
-        <h2 className="mb-3 font-semibold">
-          Goal Distribution
+      <div className="w-full bg-gradient-to-br from-slate-700/60 to-slate-800/60 backdrop-blur-xl rounded-3xl p-6 shadow-xl mt-6">
+        <h2 className="flex items-center gap-2 font-semibold text-lg mb-3">
+          🎯 Goal Distribution
         </h2>
 
         <ResponsiveContainer width="100%" height={200}>

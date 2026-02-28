@@ -2,20 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
 import { useOnboarding } from "@/context/OnboardingContext";
-import { useGoals } from "@/context/GoalContext";
 
 export default function Onboarding() {
   const router = useRouter();
-  const { login } = useAuth();
   const { data, update } = useOnboarding();
-  const { goals, addGoal } = useGoals();
   const [step, setStep] = useState(1);
 
   const finish = () => {
-    login();
-    router.replace("/");
+    router.push("/");
   };
 
   const handleNext = () => {
@@ -26,39 +21,6 @@ export default function Onboarding() {
     }
   };
 
-  const getSuggestions = () => {
-    const s: { title: string; frequency: "Daily" | "Weekly" }[] = [];
-    const steps = Number(data.dailySteps);
-    const stress = Number(data.stressLevel);
-    const readiness = Number(data.readiness);
-
-    if (!isNaN(steps) && steps < 5000) {
-      s.push({ title: "Walk 30 minutes (aim ~5k steps)", frequency: "Daily" });
-    }
-
-    if (data.sugaryFood && data.sugaryFood.toLowerCase().includes("often")) {
-      s.push({ title: "Limit sugary snacks to twice a week", frequency: "Weekly" });
-    }
-
-    if (!isNaN(stress) && stress >= 7) {
-      s.push({ title: "10 minutes mindfulness / breathing", frequency: "Daily" });
-    }
-
-    if (!isNaN(readiness) && readiness >= 7) {
-      s.push({ title: "Start light home exercise (3x week)", frequency: "Weekly" });
-    }
-
-    if (s.length === 0) {
-      s.push({ title: "30 min walk", frequency: "Daily" });
-      s.push({ title: "Eat 2 veg servings per day", frequency: "Daily" });
-    }
-
-    return s;
-  };
-
-  const suggestions = getSuggestions();
-  const isAdded = (title: string) => goals.some((g) => g.title === title);
-
   const handleBack = () => {
     if (step > 1) {
       setStep(step - 1);
@@ -67,16 +29,28 @@ export default function Onboarding() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
-      <div className="bg-slate-800 p-8 rounded-3xl w-full max-w-sm space-y-6">
+      <div className="bg-slate-800 p-8 rounded-3xl w-full max-w-lg space-y-6">
+        {/* Progress Bar */}
+        <div className="w-full bg-slate-700 rounded-full h-2">
+          <div
+            className="bg-gradient-to-r from-blue-400 to-indigo-500 h-2 rounded-full transition-all"
+            style={{ width: `${(step / 5) * 100}%` }}
+          />
+        </div>
         <div className="text-sm text-slate-400">
           Step {step} of 5
         </div>
 
         {step === 1 && (
-          <div className="space-y-4">
-            <h1 className="text-xl font-semibold">
-              I. Medical Context
-            </h1>
+          <div className="bg-blue-500/10 border border-blue-500/20 rounded-3xl p-6 space-y-6">
+            <div>
+              <h1 className="text-2xl font-semibold flex items-center gap-2">
+                🩺 <span>Medical Context</span>
+              </h1>
+              <p className="text-sm text-slate-400">
+                Understanding your health background
+              </p>
+            </div>
 
             <input
               placeholder="Diagnosis"
@@ -121,21 +95,106 @@ export default function Onboarding() {
         )}
 
         {step === 2 && (
-          <div className="space-y-4">
-            <h1 className="text-xl font-semibold">
-              II. Baseline
-            </h1>
-            <p className="text-sm text-slate-400">
-              (Coming soon)
-            </p>
+          <div className="bg-green-500/10 border border-green-500/20 rounded-3xl p-6 space-y-6">
+            <div>
+              <h1 className="text-2xl font-semibold flex items-center gap-2">
+                📊 <span>Baseline</span>
+              </h1>
+              <p className="text-sm text-slate-400">
+                Your current health snapshot
+              </p>
+            </div>
+
+            <input
+              placeholder="Age"
+              type="number"
+              className="w-full p-3 rounded-xl bg-slate-700"
+              onChange={(e) =>
+                update({ age: e.target.value })
+              }
+            />
+
+            <div className="space-y-2">
+              <p className="font-medium">Gender</p>
+              <div className="flex gap-2">
+                {["Male", "Female", "Other"].map((g) => (
+                  <button
+                    key={g}
+                    onClick={() => update({ gender: g })}
+                    className="flex-1 p-2 rounded-xl bg-slate-700 hover:bg-blue-600 transition"
+                  >
+                    {g}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <input
+              placeholder="Weight (kg)"
+              type="number"
+              className="w-full p-3 rounded-xl bg-slate-700"
+              onChange={(e) =>
+                update({ weight: e.target.value })
+              }
+            />
+
+            <input
+              placeholder="Height (cm)"
+              type="number"
+              className="w-full p-3 rounded-xl bg-slate-700"
+              onChange={(e) =>
+                update({ height: e.target.value })
+              }
+            />
+
+            <input
+              placeholder="Sleep Hours (avg per night)"
+              type="number"
+              step="0.5"
+              className="w-full p-3 rounded-xl bg-slate-700"
+              onChange={(e) =>
+                update({ sleepHours: e.target.value })
+              }
+            />
           </div>
         )}
 
         {step === 3 && (
-          <div className="space-y-4">
-            <h1 className="text-xl font-semibold">
-              III. Lifestyle
-            </h1>
+          <div className="bg-purple-500/10 border border-purple-500/20 rounded-3xl p-6 space-y-6">
+            <div>
+              <h1 className="text-2xl font-semibold flex items-center gap-2">
+                🏃‍♂️ <span>Lifestyle</span>
+              </h1>
+              <p className="text-sm text-slate-400">
+                Your daily habits & routines
+              </p>
+            </div>
+            
+            {/* Weekly Exercise Selection */}
+            <div className="space-y-3">
+              <p className="font-medium">How often do you exercise?</p>
+              {[
+                "Almost never",
+                "1-2 times / week",
+                "3-4 times / week",
+                "5+ times / week",
+              ].map((option) => (
+                <button
+                  key={option}
+                  onClick={() =>
+                    update({ weeklyExercise: option })
+                  }
+                  className={`w-full p-3 rounded-2xl border transition ${
+                    data.weeklyExercise === option
+                      ? "bg-blue-500 text-white border-blue-500"
+                      : "bg-slate-700/50 border-slate-600"
+                  }`}
+                >
+                  {data.weeklyExercise === option && "✔ "} {option}
+                </button>
+              ))}
+            </div>
+            
             <input
               placeholder="Daily steps"
               className="w-full p-3 rounded-xl bg-slate-700"
@@ -181,10 +240,15 @@ export default function Onboarding() {
         )}
 
         {step === 4 && (
-          <div className="space-y-4">
-            <h1 className="text-xl font-semibold">
-              IV. Motivation
-            </h1>
+          <div className="bg-pink-500/10 border border-pink-500/20 rounded-3xl p-6 space-y-6">
+            <div>
+              <h1 className="text-2xl font-semibold flex items-center gap-2">
+                🔥 <span>Motivation</span>
+              </h1>
+              <p className="text-sm text-slate-400">
+                Your goals & readiness
+              </p>
+            </div>
 
             <input
               placeholder="Main reason for change"
@@ -231,10 +295,15 @@ export default function Onboarding() {
         )}
 
         {step === 5 && (
-          <div className="space-y-4">
-            <h1 className="text-xl font-semibold">
-              V. Practical
-            </h1>
+          <div className="bg-amber-500/10 border border-amber-500/20 rounded-3xl p-6 space-y-6">
+            <div>
+              <h1 className="text-2xl font-semibold flex items-center gap-2">
+                🧩 <span>Practical</span>
+              </h1>
+              <p className="text-sm text-slate-400">
+                Time & availability
+              </p>
+            </div>
             <input
               placeholder="Work type"
               className="w-full p-3 rounded-xl bg-slate-700"
@@ -253,42 +322,7 @@ export default function Onboarding() {
           </div>
         )}
 
-        {/* Suggested goals based on onboarding answers */}
-        <div className="space-y-3">
-          <h2 className="text-lg font-medium">Suggested goals</h2>
-          <div className="space-y-2">
-            {suggestions.map((s) => (
-              <div
-                key={s.title}
-                className="flex items-center justify-between bg-slate-700 p-3 rounded-xl"
-              >
-                <div>
-                  <div className="font-medium">{s.title}</div>
-                  <div className="text-sm text-slate-400">{s.frequency}</div>
-                </div>
-
-                <div>
-                  <button
-                    onClick={() => addGoal(s.title, s.frequency)}
-                    disabled={isAdded(s.title)}
-                    className="bg-blue-600 px-3 py-2 rounded-xl"
-                  >
-                    {isAdded(s.title) ? "Added" : "Add"}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="pt-2">
-            <button
-              onClick={() => router.push("/chat?mode=goal")}
-              className="w-full bg-slate-600 p-3 rounded-xl"
-            >
-              Set new goal with chat
-            </button>
-          </div>
-        </div>
+        {/* Skip suggested goals section */}
 
         <div className="flex gap-3 pt-4">
           <button
