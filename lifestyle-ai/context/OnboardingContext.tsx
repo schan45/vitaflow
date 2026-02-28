@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useCallback, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 export type OnboardingData = {
   // I. Medical
@@ -54,7 +55,9 @@ export function OnboardingProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const { isAuthenticated, accessToken, isLoading: authLoading } = useAuth();
   const [data, setData] = useState<OnboardingData>({});
+  const [isLoadedFromDb, setIsLoadedFromDb] = useState(false);
 
   const update = useCallback((values: Partial<OnboardingData>) => {
     setData((prev) => ({ ...prev, ...values }));
@@ -63,6 +66,74 @@ export function OnboardingProvider({
   const replaceAll = useCallback((values: OnboardingData) => {
     setData(values);
   }, []);
+
+  useEffect(() => {
+    const loadOnboardingData = async () => {
+      if (authLoading) {
+        return;
+      }
+
+      if (!isAuthenticated || !accessToken) {
+        setData({});
+        setIsLoadedFromDb(true);
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/onboarding-data", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        if (!res.ok) {
+          setIsLoadedFromDb(true);
+          return;
+        }
+
+        const response = (await res.json()) as {
+          onboarding?: Record<string, string>;
+        };
+
+        if (response.onboarding && Object.keys(response.onboarding).length > 0) {
+          setData(response.onboarding);
+        } else {
+          setData({});
+        }
+      } catch {
+        // keep empty state if load fails
+      } finally {
+        setIsLoadedFromDb(true);
+      }
+    };
+
+    void loadOnboardingData();
+  }, [isAuthenticated, accessToken, authLoading]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !accessToken || !isLoadedFromDb) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      void fetch("/api/onboarding-data", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          onboarding: data,
+          completed: false,
+        }),
+      });
+    }, 350);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [data, isAuthenticated, accessToken, isLoadedFromDb]);
 
   return (
     <OnboardingContext.Provider value={{ data, update, replaceAll }}>
